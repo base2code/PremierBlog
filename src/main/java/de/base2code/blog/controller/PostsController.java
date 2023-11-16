@@ -67,13 +67,18 @@ public class PostsController {
                             schema = @Schema(implementation = ExternalPostsDto.class)
                     ))
     })
+    @Parameters(value = {
+            @Parameter(name = "reverse", description = "Reverse order", required = false, example = "false"),
+            @Parameter(name = "justOwnPosts", description = "Return just the own Posts (must be authenticated)", required = false, example = "false")
+    })
     @SecurityRequirement(name = "bearerAuth")
     @SecurityRequirement(name = "noAuth")
     @GetMapping(value = "/posts",
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public HttpResponse<ExternalPostsDto> getPosts(
             Principal principal,
-            @RequestParam(required = false, name = "reverse", defaultValue = "false") Boolean reverse) {
+            @RequestParam(required = false, name = "reverse", defaultValue = "false") Boolean reverse,
+            @RequestParam(required = false, name = "justOwnPosts", defaultValue = "false") Boolean justOwnPosts) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
