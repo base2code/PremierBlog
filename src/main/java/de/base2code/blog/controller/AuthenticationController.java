@@ -54,7 +54,6 @@ public class AuthenticationController {
             @Parameter(name = "password", description = "Password", required = true, example = "password")
     })
     @GetMapping(value = "/login",
-            consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public void login(@RequestParam String username, @RequestParam String password) {
         throw new UnsupportedOperationException("Not implemented yet");

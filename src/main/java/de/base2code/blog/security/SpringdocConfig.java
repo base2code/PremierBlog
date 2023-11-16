@@ -9,4 +9,8 @@ import org.springframework.context.annotation.Configuration;
         type = SecuritySchemeType.HTTP,
         name = "bearerAuth",
         scheme = "bearer")
+@SecurityScheme(
+        type = SecuritySchemeType.HTTP,
+        name = "noAuth",
+        scheme = "none")
 public class SpringdocConfig {}

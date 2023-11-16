@@ -68,8 +68,8 @@ public class PostsController {
                     ))
     })
     @SecurityRequirement(name = "bearerAuth")
+    @SecurityRequirement(name = "noAuth")
     @GetMapping(value = "/posts",
-            consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public HttpResponse<ExternalPostsDto> getPosts(
             Principal principal,
@@ -90,7 +90,6 @@ public class PostsController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping(value = "/posts/{id}",
-            consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public HttpResponse<ExternalPostDto> getPost(
             @PathVariable String id,
@@ -104,8 +103,8 @@ public class PostsController {
             @ApiResponse(responseCode = "204", description = "Deleted",
                     content = @Content(schema = @Schema(hidden = true)))
     })
-    @DeleteMapping(value = "/posts/{id}",
-            consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping(value = "/posts/{id}")
     public void deletePost(@PathVariable String id) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
