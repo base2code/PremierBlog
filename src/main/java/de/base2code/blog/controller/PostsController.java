@@ -23,7 +23,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpResponse;
 import java.security.Principal;
 import java.util.Comparator;
 import java.util.Date;
@@ -125,8 +124,8 @@ public class PostsController {
                     ))
     })
     @Parameters(value = {
-            @Parameter(name = "reverse", description = "Reverse order", required = false, example = "false"),
-            @Parameter(name = "justOwnPosts", description = "Return just the own Posts (must be authenticated)", required = false, example = "false")
+            @Parameter(name = "reverse", description = "Reverse order", example = "false"),
+            @Parameter(name = "justOwnPosts", description = "Return just the own Posts (must be authenticated)", example = "false")
     })
     @SecurityRequirement(name = "bearerAuth")
     @SecurityRequirement(name = "noAuth")
@@ -138,18 +137,18 @@ public class PostsController {
             @RequestParam(required = false, name = "justOwnPosts", defaultValue = "false") Boolean justOwnPosts) throws UserNotFoundException {
 
         Optional<User> user = userRepository.findByUsername(principal.getName());
-        if (user.isEmpty() && justOwnPosts) {
+        if (user.isEmpty() && Boolean.TRUE.equals(justOwnPosts)) {
             throw new UserNotFoundException();
         }
 
         List<Post> postsFound;
-        if (justOwnPosts) {
+        if (Boolean.TRUE.equals(justOwnPosts)) {
             postsFound = postRepository.findAllByAuthor(user.get());
         } else {
             postsFound = postRepository.findAll();
         }
 
-        if (reverse) {
+        if (Boolean.TRUE.equals(reverse)) {
             postsFound.sort((o1, o2) -> o2.getPostedAt().compareTo(o1.getPostedAt()));
         } else {
             postsFound.sort(Comparator.comparing(Post::getPostedAt));
