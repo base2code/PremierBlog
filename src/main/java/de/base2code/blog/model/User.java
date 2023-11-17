@@ -1,5 +1,6 @@
 package de.base2code.blog.model;
 
+import de.base2code.blog.dto.web.user.PublicUserDto;
 import de.base2code.blog.dto.web.user.UserRegisterDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -51,5 +52,12 @@ public class User implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
+    }
+
+    public PublicUserDto convertToPublic() {
+        return new PublicUserDto(
+            this.id,
+            this.username
+        );
     }
 }
