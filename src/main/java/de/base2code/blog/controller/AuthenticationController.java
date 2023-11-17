@@ -1,8 +1,14 @@
 package de.base2code.blog.controller;
 
+import de.base2code.blog.auth.AuthenticationService;
+import de.base2code.blog.dto.web.TextDto;
 import de.base2code.blog.dto.web.user.UserLoginDto;
 import de.base2code.blog.dto.web.user.UserRegisterDto;
 import de.base2code.blog.dto.web.user.UserTokenDto;
+import de.base2code.blog.exception.login.InvalidUsernameOrPasswordException;
+import de.base2code.blog.exception.register.EmailAlreadyTakenException;
+import de.base2code.blog.exception.register.InvalidUsernameException;
+import de.base2code.blog.exception.register.UsernameAlreadyTakenException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -12,12 +18,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
 @Tag(name = "Authentication", description = "Authentication API")
 public class AuthenticationController {
+    private final AuthenticationService authenticationService;
 
     @Operation(summary = "Register a new user", description = "Registers a new user")
     @ApiResponses(value = {
@@ -26,6 +34,8 @@ public class AuthenticationController {
                             schema = @Schema(implementation = UserTokenDto.class)
                     )),
             @ApiResponse(responseCode = "409", description = "User already exists",
+                    content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "400", description = "Invalid username",
                     content = @Content(schema = @Schema(hidden = true)))
     })
     @io.swagger.v3.oas.annotations.parameters.RequestBody
@@ -34,8 +44,14 @@ public class AuthenticationController {
     @PostMapping(value = "/register",
             consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-    public void register(@RequestBody UserRegisterDto userRegisterDto) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public ResponseEntity<UserTokenDto> register(@RequestBody UserRegisterDto userRegisterDto) {
+        try {
+            return ResponseEntity.ok(authenticationService.signup(userRegisterDto));
+        } catch (UsernameAlreadyTakenException | EmailAlreadyTakenException e) {
+            return ResponseEntity.status(409).build();
+        } catch (InvalidUsernameException e) {
+            return ResponseEntity.status(400).build();
+        }
     }
 
 
@@ -55,8 +71,13 @@ public class AuthenticationController {
     })
     @GetMapping(value = "/login",
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-    public void login(@RequestParam String username, @RequestParam String password) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public ResponseEntity<UserTokenDto> login(@RequestParam String username, @RequestParam String password) {
+        UserLoginDto userLoginDto = new UserLoginDto(username, password);
+        try {
+            return ResponseEntity.ok(authenticationService.signin(userLoginDto));
+        } catch (InvalidUsernameOrPasswordException e) {
+            return ResponseEntity.status(400).build();
+        }
     }
 
 }
