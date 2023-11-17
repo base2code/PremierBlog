@@ -21,11 +21,16 @@ public class SpringdocConfig {
     @Value("${allowed-origin}")
     private String allowedOrigin;
 
+    @Value("${localhost}")
+    private String localhost;
+
     @Bean
     public OpenAPI customOpenAPI() {
         OpenAPI openAPI = new OpenAPI();
 
-        openAPI.addServersItem(new io.swagger.v3.oas.models.servers.Server().url(allowedOrigin));
+        if (localhost == null || localhost.equalsIgnoreCase("false")) {
+            openAPI.addServersItem(new io.swagger.v3.oas.models.servers.Server().url(allowedOrigin));
+        }
 
         return openAPI;
     }

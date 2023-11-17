@@ -51,6 +51,10 @@ public class PostsController {
             consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExternalPostDto> createPost(Principal principal, @RequestBody PostCreateDto postCreateDto) throws UserNotFoundException {
+        if (principal == null) {
+            throw new UserNotFoundException();
+        }
+
         Optional<User> user = userRepository.findByUsername(principal.getName());
         if (user.isEmpty()) {
             throw new UserNotFoundException();
@@ -86,6 +90,9 @@ public class PostsController {
     public ResponseEntity<ExternalPostDto> updatePost(@PathVariable String id,
                                                     @RequestBody PostCreateDto postCreateDto,
                                                     Principal principal) throws UserNotFoundException, NotTheAutorException, PostNotFoundException {
+        if (principal == null) {
+            throw new UserNotFoundException();
+        }
 
         Optional<User> user = userRepository.findByUsername(principal.getName());
         if (user.isEmpty()) {
@@ -136,13 +143,20 @@ public class PostsController {
             @RequestParam(required = false, name = "reverse", defaultValue = "false") Boolean reverse,
             @RequestParam(required = false, name = "justOwnPosts", defaultValue = "false") Boolean justOwnPosts) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findByUsername(principal.getName());
-        if (user.isEmpty() && Boolean.TRUE.equals(justOwnPosts)) {
-            throw new UserNotFoundException();
+        Optional<User> user = Optional.empty();
+        if (principal != null) {
+            user = userRepository.findByUsername(principal.getName());
+            if (user.isEmpty() && Boolean.TRUE.equals(justOwnPosts)) {
+                throw new UserNotFoundException();
+            }
+        } else {
+            if (Boolean.TRUE.equals(justOwnPosts)) {
+                throw new UserNotFoundException();
+            }
         }
 
         List<Post> postsFound;
-        if (Boolean.TRUE.equals(justOwnPosts)) {
+        if (Boolean.TRUE.equals(justOwnPosts) && user.isPresent()) {
             postsFound = postRepository.findAllByAuthor(user.get());
         } else {
             postsFound = postRepository.findAll();
@@ -177,6 +191,10 @@ public class PostsController {
             @PathVariable String id,
             Principal principal
     ) throws PostNotFoundException {
+        if (principal == null) {
+            throw new PostNotFoundException();
+        }
+
         Optional<Post> post = postRepository.findById(id);
         if (post.isEmpty()) {
             throw new PostNotFoundException();
@@ -193,6 +211,10 @@ public class PostsController {
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping(value = "/posts/{id}")
     public void deletePost(@PathVariable String id, Principal principal) throws UserNotFoundException, PostNotFoundException, NotTheAutorException {
+        if (principal == null) {
+            throw new UserNotFoundException();
+        }
+
         Optional<User> user = userRepository.findByUsername(principal.getName());
         if (user.isEmpty()) {
             throw new UserNotFoundException();
