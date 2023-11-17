@@ -44,14 +44,8 @@ public class AuthenticationController {
     @PostMapping(value = "/register",
             consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserTokenDto> register(@RequestBody UserRegisterDto userRegisterDto) {
-        try {
-            return ResponseEntity.ok(authenticationService.signup(userRegisterDto));
-        } catch (UsernameAlreadyTakenException | EmailAlreadyTakenException e) {
-            return ResponseEntity.status(409).build();
-        } catch (InvalidUsernameException e) {
-            return ResponseEntity.status(400).build();
-        }
+    public ResponseEntity<UserTokenDto> register(@RequestBody UserRegisterDto userRegisterDto) throws EmailAlreadyTakenException, InvalidUsernameException, UsernameAlreadyTakenException {
+        return ResponseEntity.ok(authenticationService.signup(userRegisterDto));
     }
 
 
@@ -71,13 +65,9 @@ public class AuthenticationController {
     })
     @GetMapping(value = "/login",
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserTokenDto> login(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<UserTokenDto> login(@RequestParam String username, @RequestParam String password) throws InvalidUsernameOrPasswordException {
         UserLoginDto userLoginDto = new UserLoginDto(username, password);
-        try {
-            return ResponseEntity.ok(authenticationService.signin(userLoginDto));
-        } catch (InvalidUsernameOrPasswordException e) {
-            return ResponseEntity.status(400).build();
-        }
+        return ResponseEntity.ok(authenticationService.signin(userLoginDto));
     }
 
 }
