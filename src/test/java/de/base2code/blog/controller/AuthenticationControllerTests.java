@@ -118,6 +118,22 @@ class AuthenticationControllerTests {
         ).andExpect(status().isBadRequest());
     }
 
+    @Test
+    @Order(6)
+    void testInvalidEmailRegister() throws Exception {
+        UserRegisterDto userRegisterDto = new UserRegisterDto(username + "100", "h1", password);
+        Gson gson = new Gson();
+        String json = gson.toJson(userRegisterDto);
+
+        this.mockMvc.perform(
+                post("/register")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(
+                print()
+        ).andExpect(status().isBadRequest());
+    }
+
     @AfterAll
     void deletion() {
         Optional<de.base2code.blog.model.User> user = userRepository.findByUsername(username);

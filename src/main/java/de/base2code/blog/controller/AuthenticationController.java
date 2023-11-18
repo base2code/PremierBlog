@@ -7,6 +7,7 @@ import de.base2code.blog.dto.web.user.UserRegisterDto;
 import de.base2code.blog.dto.web.user.UserTokenDto;
 import de.base2code.blog.exception.login.InvalidUsernameOrPasswordException;
 import de.base2code.blog.exception.register.EmailAlreadyTakenException;
+import de.base2code.blog.exception.register.InvalidEmailException;
 import de.base2code.blog.exception.register.InvalidUsernameException;
 import de.base2code.blog.exception.register.UsernameAlreadyTakenException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,7 +45,7 @@ public class AuthenticationController {
     @PostMapping(value = "/register",
             consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserTokenDto> register(@RequestBody UserRegisterDto userRegisterDto) throws EmailAlreadyTakenException, InvalidUsernameException, UsernameAlreadyTakenException {
+    public ResponseEntity<UserTokenDto> register(@RequestBody UserRegisterDto userRegisterDto) throws EmailAlreadyTakenException, InvalidUsernameException, UsernameAlreadyTakenException, InvalidEmailException {
         return ResponseEntity.ok(authenticationService.signup(userRegisterDto));
     }
 

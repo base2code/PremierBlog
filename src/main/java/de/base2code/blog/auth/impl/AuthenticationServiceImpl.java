@@ -7,6 +7,7 @@ import de.base2code.blog.dto.web.user.UserRegisterDto;
 import de.base2code.blog.dto.web.user.UserTokenDto;
 import de.base2code.blog.exception.login.InvalidUsernameOrPasswordException;
 import de.base2code.blog.exception.register.EmailAlreadyTakenException;
+import de.base2code.blog.exception.register.InvalidEmailException;
 import de.base2code.blog.exception.register.InvalidUsernameException;
 import de.base2code.blog.exception.register.UsernameAlreadyTakenException;
 import de.base2code.blog.model.User;
@@ -22,9 +23,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     @Override
-    public UserTokenDto signup(UserRegisterDto request) throws InvalidUsernameException, UsernameAlreadyTakenException, EmailAlreadyTakenException {
+    public UserTokenDto signup(UserRegisterDto request) throws InvalidUsernameException, UsernameAlreadyTakenException, EmailAlreadyTakenException, InvalidEmailException {
         if (request.getUsername().contains("@")) {
             throw new InvalidUsernameException();
+        }
+
+        if (request.getUsername().length() < 3) {
+            throw new InvalidUsernameException();
+        }
+
+        if (!request.getEmail().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            throw new InvalidEmailException();
         }
 
         if (userRepository.existsByUsername(request.getUsername())) {
