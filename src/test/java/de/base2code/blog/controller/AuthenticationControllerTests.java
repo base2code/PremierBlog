@@ -22,6 +22,7 @@ import java.util.Optional;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AuthenticationControllerTests {
     @Autowired
     private MockMvc mockMvc;
@@ -29,13 +30,13 @@ class AuthenticationControllerTests {
     @Autowired
     private UserRepository userRepository;
 
-    private static String username = "testuser-" + new SecureRandom().nextInt(1000) + 1;
-    private static String email = "test-" + username + "@example.com";
-    private static String password = "password" + new SecureRandom().nextInt(1000) + 1;
+    private final String username = "testuser-" + new SecureRandom().nextInt(1000) + 1;
+    private final String email = "test-" + username + "@example.com";
+    private final String password = "password" + new SecureRandom().nextInt(1000) + 1;
 
     @Test
     @Order(1)
-    void register() throws Exception {
+    void registerValid() throws Exception {
         UserRegisterDto userRegisterDto = new UserRegisterDto(username, email, password);
         Gson gson = new Gson();
         String json = gson.toJson(userRegisterDto);
@@ -51,7 +52,7 @@ class AuthenticationControllerTests {
 
     @Test
     @Order(2)
-    void login() throws Exception {
+    void loginValid() throws Exception {
         this.mockMvc.perform(
                 get("/login")
                         .param("username", username)
@@ -63,6 +64,61 @@ class AuthenticationControllerTests {
 
     @Test
     @Order(3)
+    void registerDuplicateUsername() throws Exception {
+        UserRegisterDto userRegisterDto = new UserRegisterDto(username, email + "1", password);
+        Gson gson = new Gson();
+        String json = gson.toJson(userRegisterDto);
+
+        this.mockMvc.perform(
+                post("/register")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(
+                print()
+        ).andExpect(status().isConflict());
+    }
+
+    @Test
+    @Order(4)
+    void registerDuplicateEmail() throws Exception {
+        UserRegisterDto userRegisterDto = new UserRegisterDto(username + "1", email, password);
+        Gson gson = new Gson();
+        String json = gson.toJson(userRegisterDto);
+
+        this.mockMvc.perform(
+                post("/register")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(
+                print()
+        ).andExpect(status().isConflict());
+    }
+
+    @Test
+    @Order(5)
+    void loginInvalidUsername() throws Exception {
+        this.mockMvc.perform(
+                get("/login")
+                        .param("username", username + "1")
+                        .param("password", password)
+        ).andDo(
+                print()
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(5)
+    void loginInvalidPassword() throws Exception {
+        this.mockMvc.perform(
+                get("/login")
+                        .param("username", username)
+                        .param("password", password + "1")
+        ).andDo(
+                print()
+        ).andExpect(status().isBadRequest());
+    }
+
+    @AfterAll
     void deletion() {
         Optional<de.base2code.blog.model.User> user = userRepository.findByUsername(username);
         user.ifPresent(value -> userRepository.delete(value));
