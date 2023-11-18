@@ -151,7 +151,7 @@ public class PostsController {
             }
         } else {
             if (Boolean.TRUE.equals(justOwnPosts)) {
-                throw new UserNotFoundException();
+                return ResponseEntity.badRequest().build();
             }
         }
 
