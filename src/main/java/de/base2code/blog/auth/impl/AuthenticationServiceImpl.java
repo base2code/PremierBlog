@@ -47,10 +47,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user;
         if (request.getUsername().contains("@")) {
              user = userRepository.findByEmail(request.getUsername())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+                    .orElseThrow(InvalidUsernameOrPasswordException::new);
         } else {
                 user = userRepository.findByUsername(request.getUsername())
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+                        .orElseThrow(InvalidUsernameOrPasswordException::new);
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
