@@ -23,6 +23,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpResponse;
 import java.security.Principal;
 import java.util.Comparator;
 import java.util.Date;
@@ -69,7 +70,7 @@ public class PostsController {
 
         postRepository.save(post);
 
-        return ResponseEntity.ok(post.convertToExternal());
+        return new ResponseEntity<>(post.convertToExternal(), org.springframework.http.HttpStatus.CREATED);
     }
 
 
@@ -210,7 +211,7 @@ public class PostsController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping(value = "/posts/{id}")
-    public void deletePost(@PathVariable String id, Principal principal) throws UserNotFoundException, PostNotFoundException, NotTheAutorException {
+    public ResponseEntity<Void> deletePost(@PathVariable String id, Principal principal) throws UserNotFoundException, PostNotFoundException, NotTheAutorException {
         if (principal == null) {
             throw new UserNotFoundException();
         }
@@ -230,6 +231,8 @@ public class PostsController {
         }
 
         postRepository.delete(post.get());
+
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -82,6 +82,7 @@ class GetPostsTests extends BasePostsTests {
                         .header("Authorization", "Bearer " + super.getToken())
                         .param("reverse", "true")
         ).andDo(print())
+                .andExpect(status().isOk())
                 .andDo(result -> {
                     String content = result.getResponse().getContentAsString();
                     ExternalPostsDto externalPostsDto = super.getGson().fromJson(content, ExternalPostsDto.class);
