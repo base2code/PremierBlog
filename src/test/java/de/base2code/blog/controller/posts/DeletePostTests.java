@@ -39,7 +39,7 @@ class DeletePostTests extends BasePostsTests {
                         delete("/posts/" + post.getId())
                                 .header("Authorization", "Bearer " + super.getToken())
                 ).andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andDo(
                         result -> {
                             Post post1 = super.getPostRepository().findPostById(post.getId());

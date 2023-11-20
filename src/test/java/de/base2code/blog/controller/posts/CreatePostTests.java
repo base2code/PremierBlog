@@ -27,7 +27,7 @@ class CreatePostTests extends BasePostsTests {
                                 .content(super.getGson().toJson(postCreateDto))
                                 .contentType("application/json")
                 ).andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value(postCreateDto.getTitle()))
                 .andExpect(jsonPath("$.content").value(postCreateDto.getContent()))
                 .andExpect(jsonPath("$.author.username").value(super.getUsername1()))
