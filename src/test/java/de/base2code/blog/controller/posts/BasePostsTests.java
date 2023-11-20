@@ -52,5 +52,6 @@ public abstract class BasePostsTests {
     @AfterAll
     void deletion() {
         userRepository.findByUsername(username1).ifPresent(value -> userRepository.delete(value));
+        userRepository.findByUsername(username2).ifPresent(value -> userRepository.delete(value));
     }
 }
