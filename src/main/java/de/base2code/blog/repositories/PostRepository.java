@@ -5,13 +5,13 @@ import de.base2code.blog.model.Post;
 import de.base2code.blog.model.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface PostRepository extends MongoRepository<Post, String> {
-    @Query("{'id': ?0}")
+public interface PostRepository extends CrudRepository<Post, String> {
     Post findPostById(String id);
 
-    @Query("{'author': ?0}")
     List<Post> findAllByAuthor(User user);
 }

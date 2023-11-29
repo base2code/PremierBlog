@@ -25,10 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.http.HttpResponse;
 import java.security.Principal;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @Tag(name = "Posts", description = "Posts API")
@@ -156,11 +153,11 @@ public class PostsController {
             }
         }
 
-        List<Post> postsFound;
+        List<Post> postsFound = new ArrayList<>();
         if (Boolean.TRUE.equals(justOwnPosts) && user.isPresent()) {
             postsFound = postRepository.findAllByAuthor(user.get());
         } else {
-            postsFound = postRepository.findAll();
+            postRepository.findAll().forEach(postsFound::add);
         }
 
         if (Boolean.TRUE.equals(reverse)) {

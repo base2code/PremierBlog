@@ -75,6 +75,7 @@ class GetPostsTests extends BasePostsTests {
     @Test
     void getPostsReversedAuthenticated() throws Exception {
         Post post1 = createPost();
+        Thread.sleep(1100);
         Post post2 = createPost();
 
         super.getMockMvc().perform(
@@ -86,6 +87,7 @@ class GetPostsTests extends BasePostsTests {
                 .andDo(result -> {
                     String content = result.getResponse().getContentAsString();
                     ExternalPostsDto externalPostsDto = super.getGson().fromJson(content, ExternalPostsDto.class);
+                    System.out.println(externalPostsDto);
                     if (!externalPostsDto.getPosts().get(0).getId().equals(post2.getId())) {
                         throw new Exception("Posts not reversed");
                     }
